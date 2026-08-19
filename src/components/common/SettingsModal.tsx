@@ -182,7 +182,7 @@ export const SettingsModal: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        addToast('File Terlalu Besar', 'Ukuran logo maksimal 2MB.', 'error');
+        addToast('File Terlalu Besar', 'Ukuran logo maksimal 2MB (disarankan PNG/SVG/JPG).', 'error');
         return;
       }
       const reader = new FileReader();
@@ -190,10 +190,21 @@ export const SettingsModal: React.FC = () => {
         const base64 = reader.result as string;
         setLocalCompany((prev) => ({ ...prev, companyLogo: base64 }));
         setCompanyProfile({ companyLogo: base64 });
-        addToast('Logo Diperbarui', 'Logo perusahaan berhasil diunggah.', 'success');
+        addToast(
+          'Logo Berhasil Diperbarui!',
+          'Logo perusahaan telah aktif dan otomatis diterapkan di Sidebar, Favicon, Header, & Laporan PDF.',
+          'success'
+        );
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  // Handle Remove Logo / Reset to Default
+  const handleRemoveLogo = () => {
+    setLocalCompany((prev) => ({ ...prev, companyLogo: '' }));
+    setCompanyProfile({ companyLogo: '' });
+    addToast('Logo Direset', 'Logo dikembalikan ke ikon default sistem.', 'info');
   };
 
   // Handle Export Full Database Backup
@@ -453,32 +464,59 @@ export const SettingsModal: React.FC = () => {
                 </div>
 
                 {/* Logo Perusahaan */}
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-xs font-bold text-slate-700">Logo Perusahaan (URL atau Unggah File)</label>
-                  <div className="flex items-center gap-3">
+                <div className="space-y-2 sm:col-span-2 p-4 rounded-2xl bg-slate-50/80 border border-slate-200/90">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-blue-600" />
+                      <span>Logo Perusahaan / Branding Organisasi</span>
+                    </label>
+                    <span className="text-[10px] font-bold text-slate-400">
+                      Format PNG, SVG, JPG (Maks. 2MB)
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 pt-1">
                     {localCompany.companyLogo ? (
-                      <img
-                        src={localCompany.companyLogo}
-                        alt="Logo Preview"
-                        className="w-12 h-12 rounded-xl object-contain border border-slate-200 bg-slate-50 p-1 shrink-0"
-                      />
+                      <div className="relative group shrink-0">
+                        <img
+                          src={localCompany.companyLogo}
+                          alt="Logo Preview"
+                          className="w-14 h-14 rounded-2xl object-contain border border-slate-200 bg-white p-1.5 shadow-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveLogo}
+                          title="Hapus / Reset ke logo default"
+                          className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-xs cursor-pointer transition"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
                     ) : (
-                      <div className="w-12 h-12 rounded-xl border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
-                        <ImageIcon className="w-5 h-5" />
+                      <div className="w-14 h-14 rounded-2xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center text-slate-400 shrink-0 shadow-2xs">
+                        <Building2 className="w-6 h-6 text-slate-400" />
                       </div>
                     )}
-                    <input
-                      type="text"
-                      value={localCompany.companyLogo}
-                      onChange={(e) => setLocalCompany({ ...localCompany, companyLogo: e.target.value })}
-                      placeholder="https://domain.com/logo.png atau unggah file di samping"
-                      className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-hidden focus:border-blue-500"
-                    />
-                    <label className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer transition flex items-center gap-1.5 shrink-0">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Unggah</span>
-                      <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                    </label>
+
+                    <div className="flex-1 w-full space-y-1.5">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={localCompany.companyLogo}
+                          onChange={(e) => setLocalCompany({ ...localCompany, companyLogo: e.target.value })}
+                          placeholder="https://... atau klik tombol Unggah File"
+                          className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 focus:outline-hidden focus:border-blue-500"
+                        />
+                        <label className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer transition flex items-center gap-1.5 shrink-0 shadow-xs">
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>Pilih File</span>
+                          <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                        </label>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-tight">
+                        Logo ini otomatis diterapkan di <strong>Sidebar</strong>, <strong>Header</strong>, <strong>Halaman Login</strong>, <strong>Laporan PDF &amp; Excel</strong>, serta <strong>Favicon Tab Browser</strong>.
+                      </p>
+                    </div>
                   </div>
                 </div>
 

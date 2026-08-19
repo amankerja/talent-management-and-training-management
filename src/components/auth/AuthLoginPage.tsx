@@ -16,11 +16,13 @@ import {
   Layers
 } from 'lucide-react';
 import { useAuthStore, AccountType } from '../../store/useAuthStore';
+import { useSettingsStore } from '../../store/useSettingsStore';
 import { useToastStore } from '../../store/useToastStore';
 import './AuthLoginPage.css';
 
 export const AuthLoginPage: React.FC = () => {
   const { loginAsLicensed, loginAsDemo } = useAuthStore();
+  const companyProfile = useSettingsStore((s) => s.companyProfile);
   const addToast = useToastStore((s) => s.addToast);
 
   // View state: 'overview' (2-button choice) or 'form' (Detailed credential input)
@@ -143,10 +145,18 @@ export const AuthLoginPage: React.FC = () => {
         <section className="raters-left">
           {/* Brand Logo */}
           <div className="raters-brand">
-            <div className="raters-logo-icon">
-              <Layers style={{ width: 20, height: 20 }} />
-            </div>
-            <span className="raters-brand-text">WorkforceOS</span>
+            {companyProfile?.companyLogo ? (
+              <img
+                src={companyProfile.companyLogo}
+                alt="Logo"
+                style={{ width: 28, height: 28, borderRadius: 8, objectFit: 'contain', background: '#ffffff', padding: 2, border: '1px solid rgba(226, 232, 240, 0.8)' }}
+              />
+            ) : (
+              <div className="raters-logo-icon">
+                <Layers style={{ width: 20, height: 20 }} />
+              </div>
+            )}
+            <span className="raters-brand-text">{companyProfile?.companyName || 'WorkforceOS'}</span>
           </div>
 
           {/* Center Main View: 2 Choices (Sudah Punya Lisensi / Demo Aplikasi) OR Detailed Form */}

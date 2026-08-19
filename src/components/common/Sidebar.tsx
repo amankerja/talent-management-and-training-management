@@ -118,42 +118,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile, collaps
         <div className="h-16 flex items-center justify-center border-b border-slate-100 group">
           <button
             onClick={onToggleCollapse}
-            title="Klik untuk memperluas menu"
-            className="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white shadow-xs transition-all cursor-pointer group"
+            title={`${companyProfile.companyName || 'WorkforceOS'} — Klik untuk memperluas menu`}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 flex items-center justify-center text-slate-800 shadow-2xs transition-all cursor-pointer group relative overflow-hidden"
           >
             {companyProfile.companyLogo ? (
-              <img src={companyProfile.companyLogo} alt="Logo" className="w-5 h-5 rounded-md object-contain" />
+              <img src={companyProfile.companyLogo} alt="Logo" className="w-6 h-6 object-contain" />
             ) : (
-              <Sparkles className="w-4.5 h-4.5 group-hover:hidden" />
+              <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white">
+                <Sparkles className="w-4.5 h-4.5 group-hover:hidden" />
+              </div>
             )}
-            <ChevronRight className="w-4.5 h-4.5 hidden group-hover:block" />
+            <div className="absolute inset-0 bg-blue-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <ChevronRight className="w-4 h-4" />
+            </div>
           </button>
         </div>
       ) : (
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="h-16 flex items-center justify-between px-3.5 border-b border-slate-100 bg-slate-50/40">
+          <button
+            type="button"
+            onClick={() => setIsSettingsModalOpen(true, 'company')}
+            title="Klik untuk ubah profil & logo perusahaan"
+            className="flex items-center gap-2.5 min-w-0 text-left p-1 rounded-xl hover:bg-slate-100/80 transition cursor-pointer flex-1 group"
+          >
             {companyProfile.companyLogo ? (
-              <img src={companyProfile.companyLogo} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-slate-50 border border-slate-200 p-0.5 shrink-0" />
+              <div className="relative w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs group-hover:border-blue-400 transition">
+                <img src={companyProfile.companyLogo} alt="Company Logo" className="w-full h-full object-contain" />
+              </div>
             ) : (
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-xs">
-                <Sparkles className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-blue-700 transition">
+                <Sparkles className="w-4.5 h-4.5" />
               </div>
             )}
-            <div className="min-w-0">
-              <h1 className="text-sm font-bold text-slate-900 truncate tracking-tight font-display">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xs font-bold text-slate-900 truncate tracking-tight group-hover:text-blue-600 transition">
                 {companyProfile.companyName || 'WorkforceOS'}
               </h1>
-              <p className="text-[11px] text-slate-400 truncate font-sans">
-                {companyProfile.industryType || 'Talent Management'}
+              <p className="text-[10.5px] text-slate-400 truncate">
+                {companyProfile.industryType || 'Enterprise Talent System'}
               </p>
             </div>
-          </div>
+          </button>
 
           <button
             onClick={onToggleCollapse}
             aria-label="Ciutkan Menu"
             title="Ciutkan Sidebar"
-            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>

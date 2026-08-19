@@ -89,6 +89,24 @@ const AppContent: React.FC = () => {
     return localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === '1';
   });
 
+  const companyProfile = useSettingsStore((s) => s.companyProfile);
+
+  // Sync Favicon and Document Title dynamically when logo is uploaded
+  useEffect(() => {
+    if (companyProfile.companyLogo) {
+      let favicon = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+      if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        document.head.appendChild(favicon);
+      }
+      favicon.href = companyProfile.companyLogo;
+    }
+    if (companyProfile.companyName) {
+      document.title = `${companyProfile.companyName} — WorkforceOS`;
+    }
+  }, [companyProfile.companyLogo, companyProfile.companyName]);
+
   useEffect(() => {
     localStorage.setItem(SIDEBAR_COLLAPSE_KEY, sidebarCollapsed ? '1' : '0');
   }, [sidebarCollapsed]);
