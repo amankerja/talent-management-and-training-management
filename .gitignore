@@ -1,0 +1,14 @@
+node_modules/
+build/
+dist/
+dist-electron/
+dist-ssr/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+*.zip
+*.exe
+.vscode/
+

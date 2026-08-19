@@ -1,0 +1,6 @@
+{
+  "name": "WorkforceOS - Strategic HR & TNA Intelligence",
+  "description": "Enterprise Strategic Workforce Planning, Interactive Training Needs Analysis (TNA) Matrix, 9-Box Talent Engine, and Org Design Suite (Tauri Desktop App with Native SQLite).",
+  "version": "1.0.0",
+  "architecture": "Offline-First Local SQLite Desktop Application"
+}
