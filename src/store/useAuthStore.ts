@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { useSettingsStore } from './useSettingsStore';
 import { 
   verifyLicenseOnline, 
+  recordDemoAccessOnline,
   getOrCreateDeviceId, 
   LicenseVerificationResult, 
   LicenseServerStatus,
@@ -32,7 +33,7 @@ interface AuthState {
   loginWithPin: (enteredPin: string) => boolean;
   loginAsLicensed: (data: { fullName: string; companyName: string; email: string; phone: string; licenseKey: string; password?: string }) => void;
   verifyAndLoginLicensed: (data: { fullName: string; companyName: string; email: string; phone: string; licenseKey: string; password?: string }) => Promise<LicenseVerificationResult>;
-  loginAsDemo: (data: { fullName: string; companyName: string; email: string; phone: string }) => void;
+  loginAsDemo: (data: { fullName: string; companyName: string; email: string; phone: string; password?: string }) => Promise<void>;
   upgradeToLicensed: (data: { fullName: string; companyName: string; email: string; phone: string; licenseKey: string; password?: string } | string) => boolean;
   verifyAndUpgradeLicensed: (data: { fullName: string; companyName: string; email: string; phone: string; licenseKey: string; password?: string }) => Promise<LicenseVerificationResult>;
   logout: () => void;
@@ -248,8 +249,23 @@ export const useAuthStore = create<AuthState>((set, get) => {
       return result;
     },
 
-    loginAsDemo: ({ fullName, companyName, email, phone }) => {
+    loginAsDemo: async ({ fullName, companyName, email, phone, password }) => {
       const userProfile = { fullName, companyName, email, phone };
+      const deviceId = getOrCreateDeviceId();
+
+      // Record demo access to server
+      try {
+        await recordDemoAccessOnline({
+          companyName,
+          fullName,
+          email,
+          phone,
+          password,
+          deviceId
+        });
+      } catch (err) {
+        console.warn('Gagal mencatat demo online, melanjutkan sesi lokal', err);
+      }
 
       // Sync company profile in SettingsStore
       useSettingsStore.getState().setCompanyProfile({
@@ -270,7 +286,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         accountType: 'demo' as AccountType,
         userProfile,
         licenseKey: 'DEMO-TRIAL-EVALUATION-MODE',
-        deviceId: getOrCreateDeviceId(),
+        deviceId,
         lastServerStatus: null
       };
       set(next);

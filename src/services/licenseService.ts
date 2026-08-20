@@ -353,3 +353,59 @@ export function getLastVerificationRecord(): {
     return null;
   }
 }
+
+/**
+ * Records demo access user information to the central server
+ */
+export async function recordDemoAccessOnline(params: {
+  companyName: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  password?: string;
+  pin?: string;
+  deviceId?: string;
+}): Promise<{ success: boolean; message: string }> {
+  const deviceId = params.deviceId || getOrCreateDeviceId();
+  const companyName = params.companyName ? params.companyName.trim() : '';
+  const fullName = params.fullName ? params.fullName.trim() : '';
+  const phone = params.phone ? params.phone.trim() : '';
+  const email = params.email ? params.email.trim() : '';
+  const password = (params.password || params.pin || 'DEMO').trim();
+
+  const queryParams = new URLSearchParams({
+    app: LICENSE_APP_TYPE,
+    sn: 'DEMO-TRIAL-EVALUATION-MODE',
+    deviceId: deviceId,
+    nama_perusahaan: companyName,
+    nama_pic: fullName,
+    no_telepon: phone,
+    email: email,
+    password: password,
+    pin: password,
+    is_demo: 'true'
+  });
+
+  const targetUrl = `${LICENSE_SERVER_URL}?${queryParams.toString()}`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const response = await fetch(targetUrl, {
+      method: 'GET',
+      redirect: 'follow',
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      return { success: true, message: 'Data sesi demo berhasil dicatat ke server.' };
+    }
+    return { success: false, message: `Server mengembalikan status HTTP ${response.status}.` };
+  } catch (err: any) {
+    console.warn('Gagal mencatat data demo ke server (aplikasi tetap mengizinkan sesi lokal):', err?.message);
+    return { success: false, message: err?.message || 'Koneksi gagal' };
+  }
+}

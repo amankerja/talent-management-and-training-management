@@ -204,23 +204,32 @@ export const AuthLoginPage: React.FC = () => {
     } else {
       // Demo Mode
       setIsSubmitting(true);
-      setSubmitStatusText('Menyiapkan Sesi Uji Coba Demo...');
+      setSubmitStatusText('Menghubungi Server...');
 
-      setTimeout(() => {
-        loginAsDemo({
+      try {
+        await loginAsDemo({
           companyName: companyName.trim(),
           fullName: fullName.trim(),
           email: email.trim(),
-          phone: phone.trim()
+          phone: phone.trim(),
+          password: password.trim()
         });
+        addToast(
+          'Masuk Mode Demo / Evaluasi',
+          `Selamat datang di sesi uji coba ${fullName}. Data telah dicatat ke server. Kuota data dibatasi maksimal 5 data per tabel.`,
+          'info'
+        );
+      } catch (err: any) {
+        console.warn('Gagal koneksi server demo, tetap membuka mode lokal:', err?.message);
         addToast(
           'Masuk Mode Demo / Evaluasi',
           `Selamat datang di sesi uji coba ${fullName}. Kuota data dibatasi maksimal 5 data per tabel.`,
           'info'
         );
+      } finally {
         setIsSubmitting(false);
         setSubmitStatusText('');
-      }, 400);
+      }
     }
   };
 
