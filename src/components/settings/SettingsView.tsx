@@ -408,7 +408,7 @@ export const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-y-auto custom-scrollbar bg-[#f8fafc] font-sans p-4 lg:p-8 space-y-6">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto custom-scrollbar bg-slate-50 font-sans p-4 lg:p-8 space-y-6">
       
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 lg:p-6 rounded-2xl border border-slate-200/80 shadow-2xs">

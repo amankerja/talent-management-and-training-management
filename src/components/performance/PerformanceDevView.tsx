@@ -1107,7 +1107,7 @@ export const PerformanceDevView: React.FC = () => {
                       </div>
 
                       {/* Overall Fit Score Box */}
-                      <div className="text-center px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 shrink-0 min-w-[120px]">
+                      <div className="text-center px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 shrink-0 min-w-30">
                         <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">OVERALL JOB FIT</span>
                         <span className="text-2xl font-black text-emerald-700 leading-tight block">{nodeAssessment.overallFitScore}%</span>
                         <span className="text-[10px] font-bold text-emerald-700 block">
@@ -1420,7 +1420,7 @@ export const PerformanceDevView: React.FC = () => {
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-2">
-                              <div className="flex-1 h-1.5 rounded-full bg-slate-200 min-w-[48px]">
+                              <div className="flex-1 h-1.5 rounded-full bg-slate-200 min-w-12">
                                 <div
                                   className={`h-1.5 rounded-full transition-all ${
                                     achievement >= 100 ? 'bg-emerald-500' : achievement >= 85 ? 'bg-amber-500' : 'bg-red-500'
