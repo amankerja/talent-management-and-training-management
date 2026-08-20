@@ -22,7 +22,10 @@ export type ActiveTabType =
   | 'mpp' 
   | 'org' 
   | 'employees'
-  | 'ai-advisor';
+  | 'ai-advisor'
+  | 'career'
+  | 'career-architecture'
+  | 'career-ladder';
 
 interface UIState {
   activeTab: ActiveTabType;
@@ -69,7 +72,19 @@ interface UIState {
 
 export const useUIStore = create<UIState>((set) => ({
   activeTab: 'executive',
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  setActiveTab: (tab) => {
+    if (tab === 'career' || tab === 'career-architecture' || tab === 'career-ladder') {
+      set((state) => ({
+        activeTab: 'performance-dev',
+        domainSubTabs: {
+          ...state.domainSubTabs,
+          performanceDev: 'career'
+        }
+      }));
+      return;
+    }
+    set({ activeTab: tab });
+  },
 
   domainSubTabs: {
     workforce: 'directory',

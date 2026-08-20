@@ -72,7 +72,7 @@ const STORAGE_KEY_MODEL = 'workforce_os_gemini_model';
 
 const DEFAULT_COMPANY_PROFILE: CompanyProfile = {
   companyName: 'PT Aman Kerja',
-  companyLogo: '',
+  companyLogo: '/favicon.png',
   companyAddress: 'Kawasan Industri Pertambangan & Energi Terpadu, Kalimantan Timur',
   companyPhone: '+62 812-3456-7890',
   companyEmail: 'corporate@amankerja.co.id',

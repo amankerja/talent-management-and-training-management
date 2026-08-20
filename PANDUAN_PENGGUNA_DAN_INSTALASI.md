@@ -264,16 +264,18 @@ flowchart LR
 
 ---
 
-## 9. Layanan Bantuan & Dukungan Teknis
+## 9. Layanan Bantuan & Dukungan Teknis Resmi
 
-Untuk pertanyaan teknis, aktivasi lisensi tambahan, maupun konsultasi implementasi sistem:
+Untuk pertanyaan teknis, aktivasi lisensi tambahan, perpanjangan masa berlaku, maupun konsultasi implementasi sistem:
 
-- **Repositori Resmi**: [https://github.com/amankerja/talent-management-and-training-management](https://github.com/amankerja/talent-management-and-training-management)
-- **Email Dukungan**: `corporate@amankerja.co.id` / `satriamudaprima@gmail.com`
-- **Pusat Panduan Dalam Aplikasi**: Klik ikon tanda tanya (`❓`) di Header atas aplikasi kapan saja untuk mengakses simulasi alur kerja interaktif dan video panduan langkah demi langkah.
+- 📱 **WhatsApp Admin**: [+62 822-2308-9790](https://wa.me/6282223089790)
+- ✉️ **Email Resmi**: [satriamudaprima@gmail.com](mailto:satriamudaprima@gmail.com) / `corporate@amankerja.co.id`
+- 🌐 **Website Resmi**: [https://amankerja.com](https://amankerja.com)
+- ❓ **Pusat Panduan Dalam Aplikasi**: Klik menu **Panduan & Simulasi** di sidebar kiri atau ikon tanda tanya (`❓`) di header atas aplikasi kapan saja untuk mengakses simulasi alur kerja interaktif dan glosarium HR.
 
 ---
 
 <div align="center">
-  <sub>WorkforceOS Enterprise Human Capital Operating System. Seluruh hak cipta dilindungi undang-undang. © 2026.</sub>
+  <sub>Talent & Training Management System — Enterprise Human Capital Operating System. Seluruh hak cipta dilindungi undang-undang. © 2026.</sub>
 </div>
+

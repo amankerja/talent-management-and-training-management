@@ -32,7 +32,12 @@ import {
   ChevronRight,
   Play,
   RotateCcw,
-  Check
+  Check,
+  MessageCircle,
+  Mail,
+  Globe,
+  Headphones,
+  Phone
 } from 'lucide-react';
 
 // Types
@@ -998,6 +1003,60 @@ export const HelpAndUseCasesView: React.FC = () => {
       {/* Main Content Body */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-6">
         <div className="max-w-7xl mx-auto space-y-6">
+
+          {/* Official Admin Contact Support Banner */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 shadow-xs">
+                <Headphones className="w-6 h-6 text-amber-300" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-400 text-slate-900">
+                    Official Support
+                  </span>
+                  <span className="text-xs text-blue-100 font-medium">Bantuan Teknis &amp; Aktivasi Lisensi</span>
+                </div>
+                <h3 className="text-sm sm:text-base font-bold mt-0.5">
+                  Pusat Layanan Konsultasi &amp; Kontak Admin Resmi
+                </h3>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              <a
+                href="https://wa.me/6282223089790"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-xs transition-all"
+                title="Chat WhatsApp Admin"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>WhatsApp: +62 822-2308-9790</span>
+              </a>
+
+              <a
+                href="mailto:satriamudaprima@gmail.com"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white text-xs font-bold transition-all"
+                title="Kirim Email ke Admin"
+              >
+                <Mail className="w-4 h-4" />
+                <span>satriamudaprima@gmail.com</span>
+              </a>
+
+              <a
+                href="https://amankerja.com"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold transition-all"
+                title="Kunjungi Website Resmi"
+              >
+                <Globe className="w-4 h-4" />
+                <span>amankerja.com</span>
+              </a>
+            </div>
+          </div>
 
           {/* ========================================================================= */}
           {/* TAB 1: PUSAT BANTUAN & FAQ / Q&A LENGKAP */}

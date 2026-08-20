@@ -52,7 +52,10 @@ const VIEW_MAP: Record<ActiveTabType, React.LazyExoticComponent<React.FC>> = {
   'tna-setup': CompetencyTNAView,
   ninebox: TalentSuccessionView,
   mpp: WorkforcePlanningView,
-  'ai-advisor': PeopleIntelligenceView
+  'ai-advisor': PeopleIntelligenceView,
+  career: PerformanceDevView,
+  'career-architecture': PerformanceDevView,
+  'career-ladder': PerformanceDevView
 };
 
 const ViewSkeleton: React.FC = () => (
@@ -103,7 +106,7 @@ const AppContent: React.FC = () => {
       favicon.href = companyProfile.companyLogo;
     }
     if (companyProfile.companyName) {
-      document.title = `${companyProfile.companyName} — WorkforceOS`;
+      document.title = `${companyProfile.companyName} — Talent & Training Management`;
     }
   }, [companyProfile.companyLogo, companyProfile.companyName]);
 

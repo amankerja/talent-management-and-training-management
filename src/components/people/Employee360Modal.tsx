@@ -544,7 +544,19 @@ export const Employee360Modal: React.FC = () => {
             {/* TAB 5: JALUR KARIER */}
             {activeSubTab === 'career' && (
               <div className="space-y-4">
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Alternatif Jalur Karier & Job Fit</h4>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Alternatif Jalur Karier &amp; Job Fit</h4>
+                  <button
+                    onClick={() => {
+                      setIsEmployeeModalOpen(false);
+                      setActiveTab('career');
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs transition cursor-pointer border border-blue-200/60"
+                  >
+                    <span>Buka Career Architecture Engine</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 gap-3">
                   {(selectedEmployee.careerPaths || []).map((path) => (
                     <div key={path.id} className="p-4 rounded-xl bg-white border border-slate-200 space-y-2">

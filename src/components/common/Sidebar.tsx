@@ -50,6 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile, collaps
     if (tab === 'ninebox') return 'talent-succession';
     if (tab === 'mpp') return 'workforce-planning';
     if (tab === 'ai-advisor') return 'people-intelligence';
+    if (tab === 'career' || tab === 'career-architecture' || tab === 'career-ladder') return 'performance-dev';
     return tab;
   };
 
@@ -83,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile, collaps
     },
     { 
       tab: 'performance-dev', 
-      label: 'Performance & IDP', 
+      label: 'Performance, IDP & Career', 
       icon: Compass
     },
     { 
@@ -121,13 +122,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile, collaps
             title={`${companyProfile.companyName || 'WorkforceOS'} — Klik untuk memperluas menu`}
             className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 flex items-center justify-center text-slate-800 shadow-2xs transition-all cursor-pointer group relative overflow-hidden"
           >
-            {companyProfile.companyLogo ? (
-              <img src={companyProfile.companyLogo} alt="Logo" className="w-6 h-6 object-contain" />
-            ) : (
-              <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white">
-                <Sparkles className="w-4.5 h-4.5 group-hover:hidden" />
-              </div>
-            )}
+            <div className="w-full h-full p-1.5 flex items-center justify-center">
+              <img src={companyProfile.companyLogo || '/favicon.png'} alt="Logo" className="w-full h-full object-contain" />
+            </div>
             <div className="absolute inset-0 bg-blue-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <ChevronRight className="w-4 h-4" />
             </div>
@@ -141,15 +138,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile, collaps
             title="Klik untuk ubah profil & logo perusahaan"
             className="flex items-center gap-2.5 min-w-0 text-left p-1 rounded-xl hover:bg-slate-100/80 transition cursor-pointer flex-1 group"
           >
-            {companyProfile.companyLogo ? (
-              <div className="relative w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs group-hover:border-blue-400 transition">
-                <img src={companyProfile.companyLogo} alt="Company Logo" className="w-full h-full object-contain" />
-              </div>
-            ) : (
-              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-blue-700 transition">
-                <Sparkles className="w-4.5 h-4.5" />
-              </div>
-            )}
+            <div className="relative w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs group-hover:border-blue-400 transition">
+              <img src={companyProfile.companyLogo || '/favicon.png'} alt="Company Logo" className="w-full h-full object-contain" />
+            </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-xs font-bold text-slate-900 truncate tracking-tight group-hover:text-blue-600 transition">
                 {companyProfile.companyName || 'WorkforceOS'}

@@ -84,6 +84,7 @@ export const PerformanceDevView: React.FC = () => {
 
   const activeSubTab = domainSubTabs.performanceDev || 'idp';
   const setActiveSubTab = (tab: string) => setDomainSubTab('performanceDev', tab);
+  const isCareerSubTab = activeSubTab === 'career' || activeSubTab === 'career-ladder';
 
   const [selectedEmpId, setSelectedEmpId] = useState(employees[1]?.id || employees[0]?.id || '');
   const activeEmp = employees.find((e) => e.id === selectedEmpId) || employees[0];
@@ -506,7 +507,7 @@ export const PerformanceDevView: React.FC = () => {
           <button
             onClick={() => setActiveSubTab('career')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-              activeSubTab === 'career'
+              isCareerSubTab
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
@@ -851,7 +852,7 @@ export const PerformanceDevView: React.FC = () => {
         {/* ========================================================================= */}
         {/* SUBTAB 2: CAREER ARCHITECTURE ENGINE (STANDALONE ENGINE) */}
         {/* ========================================================================= */}
-        {activeSubTab === 'career-ladder' && (
+        {isCareerSubTab && (
           <div className="p-4 lg:p-6 space-y-6 max-w-7xl mx-auto animate-fade-in">
             {isDemo && (
               <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between shadow-2xs">

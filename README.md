@@ -201,6 +201,16 @@ npm run tauri build
 
 ---
 
+## 📞 Layanan Dukungan & Kontak Admin Resmi
+
+Untuk pertanyaan teknis, aktivasi lisensi tambahan, maupun konsultasi implementasi sistem:
+
+- 📱 **WhatsApp Admin**: [+62 822-2308-9790](https://wa.me/6282223089790)
+- ✉️ **Email Resmi**: [satriamudaprima@gmail.com](mailto:satriamudaprima@gmail.com)
+- 🌐 **Website Resmi**: [https://amankerja.com](https://amankerja.com)
+
+---
+
 ## 📄 Lisensi & Hak Cipta
 
 Dilisensikan di bawah lisensi komersial korporat. Seluruh hak cipta dilindungi undang-undang.
@@ -208,5 +218,6 @@ Dilisensikan di bawah lisensi komersial korporat. Seluruh hak cipta dilindungi u
 ---
 
 <div align="center">
-  <sub>Dibangun dengan dedikasi untuk keunggulan manajemen sumber daya manusia korporat. © 2026 WorkforceOS.</sub>
+  <sub>Dibangun dengan dedikasi untuk keunggulan manajemen sumber daya manusia korporat. © 2026 Talent & Training Management System.</sub>
 </div>
+

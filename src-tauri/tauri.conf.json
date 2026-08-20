@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "workforce-os",
-  "version": "0.1.0",
-  "identifier": "com.workforce.talent",
+  "productName": "Talent & Training Management",
+  "version": "1.0.0",
+  "identifier": "com.sagara.talenttraining",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "WorkforceOS — Enterprise Strategic HR & Talent Management",
+        "title": "Talent & Training Management System — Enterprise Workforce Intelligence",
         "width": 1440,
         "height": 900,
         "minWidth": 1100,

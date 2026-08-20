@@ -32,13 +32,18 @@ import {
   X,
   Layers,
   GraduationCap,
-  User
+  User,
+  Copy,
+  Globe,
+  MessageCircle,
+  Headphones
 } from 'lucide-react';
 import { useSettingsStore, SettingsTabType } from '../../store/useSettingsStore';
 import { useWorkforceDataStore } from '../../store/useWorkforceDataStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { testGeminiApiKey } from '../../services/gemini';
 import { useToastStore } from '../../store/useToastStore';
+import { getOrCreateDeviceId, verifyLicenseOnline } from '../../services/licenseService';
 
 export const SettingsView: React.FC = () => {
   const { 
@@ -58,53 +63,57 @@ export const SettingsView: React.FC = () => {
     removeEducationLevel,
     geminiApiKey, 
     geminiModel, 
-    activeSettingsTab,
     setGeminiApiKey, 
-    setGeminiModel, 
-    setActiveSettingsTab,
-    clearApiKey 
+    setGeminiModel,
+    activeSettingsTab,
+    setActiveSettingsTab 
   } = useSettingsStore();
 
   const workforceStore = useWorkforceDataStore();
+  const { accountType, userProfile, upgradeToLicensed, verifyAndUpgradeLicensed, deviceId: storeDeviceId } = useAuthStore();
   const addToast = useToastStore((s) => s.addToast);
-  const { accountType, userProfile, upgradeToLicensed } = useAuthStore();
 
-  // Local Form States
+  const deviceId = storeDeviceId || getOrCreateDeviceId();
+  const [copiedDevId, setCopiedDevId] = useState(false);
+  const [isVerifyingLicense, setIsVerifyingLicense] = useState(false);
+
+  // Local form states
   const [localCompany, setLocalCompany] = useState(companyProfile);
   const [localLicense, setLocalLicense] = useState(licenseInfo);
   const [licenseForm, setLicenseForm] = useState({
-    companyName: companyProfile.companyName || userProfile.companyName || 'PT Aman Kerja',
-    fullName: userProfile.fullName || 'Ahmad Faqih Didin',
-    email: companyProfile.companyEmail || userProfile.email || 'corporate@amankerja.co.id',
-    phone: companyProfile.companyPhone || userProfile.phone || '+62 812-3456-7890',
-    licenseKey: licenseInfo.licenseKey || 'WOS-ENT-2026-AK-9988-MINING'
+    companyName: companyProfile.companyName || userProfile.companyName || '',
+    fullName: userProfile.fullName || '',
+    email: companyProfile.companyEmail || userProfile.email || '',
+    phone: companyProfile.companyPhone || userProfile.phone || '',
+    licenseKey: licenseInfo.licenseKey || '',
+    password: ''
   });
+  const [inputKey, setInputKey] = useState(geminiApiKey);
+  const [localModel, setLocalModel] = useState(geminiModel);
+  const [showKey, setShowKey] = useState(false);
+  const [isTestingKey, setIsTestingKey] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  // Local reference addition inputs
   const [newDept, setNewDept] = useState('');
   const [newGrade, setNewGrade] = useState('');
   const [newEdu, setNewEdu] = useState('');
-
-  // AI states
-  const [inputKey, setInputKey] = useState(geminiApiKey);
-  const [selectedModel, setLocalModel] = useState(geminiModel);
-  const [showKey, setShowKey] = useState(false);
-  const [testState, setTestState] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
-  const [testMessage, setTestMessage] = useState('');
 
   // Backup / File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isRestoring, setIsRestoring] = useState(false);
 
   // Sync state when store changes
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalCompany(companyProfile);
     setLocalLicense(licenseInfo);
     setLicenseForm({
-      companyName: companyProfile.companyName || userProfile.companyName || 'PT Aman Kerja',
-      fullName: userProfile.fullName || 'Ahmad Faqih Didin',
-      email: companyProfile.companyEmail || userProfile.email || 'corporate@amankerja.co.id',
-      phone: companyProfile.companyPhone || userProfile.phone || '+62 812-3456-7890',
-      licenseKey: licenseInfo.licenseKey || 'WOS-ENT-2026-AK-9988-MINING'
+      companyName: companyProfile.companyName || userProfile.companyName || '',
+      fullName: userProfile.fullName || '',
+      email: companyProfile.companyEmail || userProfile.email || '',
+      phone: companyProfile.companyPhone || userProfile.phone || '',
+      licenseKey: licenseInfo.licenseKey || '',
+      password: ''
     });
     setInputKey(geminiApiKey);
     setLocalModel(geminiModel);
@@ -119,8 +128,15 @@ export const SettingsView: React.FC = () => {
     addToast('Profil Perusahaan Disimpan', `Informasi ${localCompany.companyName} berhasil diperbarui.`, 'success');
   };
 
-  // Handle Save License / Activate from Demo Mode
-  const handleSaveLicense = (e: React.FormEvent) => {
+  const handleCopyDeviceId = () => {
+    navigator.clipboard.writeText(deviceId);
+    setCopiedDevId(true);
+    addToast('ID Perangkat Disalin', `Device ID "${deviceId}" berhasil disalin ke clipboard.`, 'info');
+    setTimeout(() => setCopiedDevId(false), 2000);
+  };
+
+  // Handle Online Verification & Save License from Demo Mode
+  const handleSaveLicense = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!licenseForm.companyName.trim() || !licenseForm.fullName.trim() || !licenseForm.email.trim() || !licenseForm.phone.trim()) {
@@ -133,36 +149,71 @@ export const SettingsView: React.FC = () => {
       return;
     }
 
-    const success = upgradeToLicensed({
-      companyName: licenseForm.companyName.trim(),
-      fullName: licenseForm.fullName.trim(),
-      email: licenseForm.email.trim(),
-      phone: licenseForm.phone.trim(),
-      licenseKey: licenseForm.licenseKey.trim()
-    });
-
-    if (success) {
-      setLocalLicense((prev) => ({
-        ...prev,
-        licenseKey: licenseForm.licenseKey.trim().toUpperCase(),
-        licensedTo: licenseForm.companyName.trim(),
-        licenseType: 'Commercial Enterprise (Royalty-Free Lifetime)',
-        maxHeadcount: 'Unlimited Enterprise Headcount',
-        isActivated: true
-      }));
-      setLocalCompany((prev) => ({
-        ...prev,
+    setIsVerifyingLicense(true);
+    try {
+      const result = await verifyAndUpgradeLicensed({
         companyName: licenseForm.companyName.trim(),
-        companyEmail: licenseForm.email.trim(),
-        companyPhone: licenseForm.phone.trim()
-      }));
-      addToast(
-        'Aktivasi Lisensi Berhasil!',
-        `Selamat ${licenseForm.fullName}. Lisensi Enterprise resmi aktif untuk ${licenseForm.companyName}. Seluruh 17 tabel & fitur analitikal terbuka tanpa batas kuota.`,
-        'success'
-      );
-    } else {
-      addToast('Aktivasi Gagal', 'Format serial lisensi tidak valid.', 'error');
+        fullName: licenseForm.fullName.trim(),
+        email: licenseForm.email.trim(),
+        phone: licenseForm.phone.trim(),
+        licenseKey: licenseForm.licenseKey.trim(),
+        password: licenseForm.password.trim()
+      });
+
+      if (result.success) {
+        setLocalLicense((prev) => ({
+          ...prev,
+          licenseKey: licenseForm.licenseKey.trim().toUpperCase(),
+          licensedTo: licenseForm.companyName.trim(),
+          licenseType: 'Commercial Enterprise (Royalty-Free Lifetime)',
+          maxHeadcount: 'Unlimited Enterprise Headcount',
+          isActivated: true
+        }));
+        setLocalCompany((prev) => ({
+          ...prev,
+          companyName: licenseForm.companyName.trim(),
+          companyEmail: licenseForm.email.trim(),
+          companyPhone: licenseForm.phone.trim()
+        }));
+        addToast(
+          'Aktivasi Lisensi Berhasil!',
+          result.message || `Selamat ${licenseForm.fullName}. Lisensi Enterprise resmi aktif untuk ${licenseForm.companyName}. Seluruh 17 tabel & fitur analitikal terbuka tanpa batas kuota.`,
+          'success'
+        );
+      } else {
+        addToast('Aktivasi Gagal', result.message, 'error');
+      }
+    } catch (err: any) {
+      addToast('Kesalahan Server', `Gagal menghubungkan ke server lisensi: ${err?.message || 'Koneksi error'}`, 'error');
+    } finally {
+      setIsVerifyingLicense(false);
+    }
+  };
+
+  // Check license status online with server without submitting
+  const handleCheckServerStatus = async () => {
+    if (!licenseForm.licenseKey.trim()) {
+      addToast('Validasi', 'Masukkan serial lisensi terlebih dahulu untuk verifikasi online.', 'warning');
+      return;
+    }
+    setIsVerifyingLicense(true);
+    try {
+      const res = await verifyLicenseOnline({
+        sn: licenseForm.licenseKey.trim(),
+        companyName: licenseForm.companyName.trim(),
+        phone: licenseForm.phone.trim(),
+        email: licenseForm.email.trim(),
+        deviceId
+      });
+      if (res.success) {
+        addToast('Status Server: VALID', res.message, 'success');
+      } else {
+        addToast(`Status Server: ${res.status}`, res.message, 'error');
+      }
+    } catch (e: any) {
+      addToast('Gagal Cek Server', e?.message || 'Koneksi error', 'error');
+    } finally {
+      setIsVerifyingLicense(false);
     }
   };
 
@@ -923,28 +974,40 @@ export const SettingsView: React.FC = () => {
                 />
               </div>
 
-              {/* 4. Serial Lisensi */}
+              {/* 4. Serial Lisensi & Device ID */}
               <div className="space-y-1.5 pt-1">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                     <Key className="w-3.5 h-3.5 text-blue-600" />
                     <span>Kunci Serial Lisensi (License Key) <span className="text-rose-500">*</span></span>
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLicenseForm({
-                        companyName: 'PT Aman Kerja',
-                        fullName: 'Ahmad Faqih Didin',
-                        email: 'corporate@amankerja.co.id',
-                        phone: '+62 812-3456-7890',
-                        licenseKey: 'WOS-ENT-2026-AK-9988-MINING'
-                      });
-                    }}
-                    className="text-[11px] text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
-                  >
-                    Gunakan Serial Bawaan
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      disabled={isVerifyingLicense}
+                      onClick={handleCheckServerStatus}
+                      className="text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold cursor-pointer flex items-center gap-1"
+                      title="Periksa validitas serial ke server Google Apps Script"
+                    >
+                      <Globe className="w-3 h-3" />
+                      <span>Cek Server Online</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLicenseForm({
+                          companyName: 'PT Aman Kerja',
+                          fullName: 'Ahmad Faqih Didin',
+                          email: 'corporate@amankerja.co.id',
+                          phone: '+62 812-3456-7890',
+                          licenseKey: 'WOS-ENT-2026-AK-9988-MINING'
+                        });
+                      }}
+                      className="text-[11px] text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+                    >
+                      Gunakan Serial Bawaan
+                    </button>
+                  </div>
                 </div>
                 <input
                   type="text"
@@ -954,20 +1017,102 @@ export const SettingsView: React.FC = () => {
                   placeholder="WOS-ENT-2026-AK-9988-MINING"
                   className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/40 text-xs font-mono text-slate-900 uppercase focus:bg-white focus:outline-hidden focus:border-blue-500 transition"
                 />
-                <p className="text-[10px] text-slate-400">
-                  Format: <code>WOS-ENT-[YEAR]-[CODE]-[INDUSTRY]</code>
-                </p>
+                
+                {/* Device ID Display */}
+                <div className="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[10px] font-bold uppercase text-slate-400">ID Perangkat Ini:</span>
+                    <code className="font-mono font-bold text-slate-800 truncate">{deviceId}</code>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyDeviceId}
+                    className="flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 cursor-pointer shrink-0"
+                  >
+                    {copiedDevId ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedDevId ? 'Tersalin!' : 'Salin ID'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 5. Password / PIN Akses */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Password / PIN Akses *</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={licenseForm.password}
+                  onChange={(e) => setLicenseForm({ ...licenseForm, password: e.target.value })}
+                  placeholder="Buat Password / PIN untuk login berikutnya"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-900 focus:bg-white focus:outline-hidden focus:border-blue-500 transition"
+                />
               </div>
 
               {/* Submit Action */}
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition cursor-pointer flex items-center justify-center gap-2"
+                  disabled={isVerifyingLicense}
+                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-bold shadow-xs transition cursor-pointer flex items-center justify-center gap-2"
                 >
                   <FileCheck className="w-4 h-4" />
-                  <span>Aktivasi &amp; Simpan Lisensi Enterprise</span>
+                  <span>{isVerifyingLicense ? 'Menghubungi Server...' : 'Verifikasi Server & Aktivasi Lisensi Enterprise'}</span>
                 </button>
+              </div>
+            </div>
+
+            {/* Official Admin Contact Support Card */}
+            <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-linear-to-r from-blue-50/60 via-indigo-50/30 to-white space-y-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Headphones className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Bantuan Teknis, Lisensi &amp; Konsultasi Sistem</h4>
+                  <p className="text-[11px] text-slate-500">Hubungi admin resmi untuk aktivasi serial baru, konsultasi fitur, atau bantuan on-premise.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                <a
+                  href="https://wa.me/6282223089790"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 text-emerald-800 transition group"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase block">WhatsApp Admin</span>
+                    <span className="text-xs font-bold truncate block text-emerald-950">+62 822-2308-9790</span>
+                  </div>
+                </a>
+
+                <a
+                  href="mailto:satriamudaprima@gmail.com"
+                  className="flex items-center gap-2.5 p-3 rounded-xl bg-blue-50 hover:bg-blue-100/80 border border-blue-200 text-blue-800 transition group"
+                >
+                  <Mail className="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold text-blue-600 uppercase block">Email Resmi</span>
+                    <span className="text-xs font-bold truncate block text-blue-950">satriamudaprima@gmail.com</span>
+                  </div>
+                </a>
+
+                <a
+                  href="https://amankerja.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2.5 p-3 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200 text-purple-800 transition group"
+                >
+                  <Globe className="w-4 h-4 text-purple-600 group-hover:scale-110 transition-transform shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold text-purple-600 uppercase block">Website Resmi</span>
+                    <span className="text-xs font-bold truncate block text-purple-950">amankerja.com</span>
+                  </div>
+                </a>
               </div>
             </div>
           </form>
